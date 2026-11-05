@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+*.log
+slide-*.jpg
+*.pdf
+
+# Lokale Dateien und zusätzliche Umgebungsdateien
+.DS_Store
+.env.*
+!.env.example
+*.tsbuildinfo
+
+# Persönliche Demo-Infrastruktur bleibt lokal
+/DEMO-RUNBOOK.md

@@ -1,0 +1,103 @@
+{
+  "name": "EverlastAI – Interview Agent Lena",
+  "firstMessage": "Hallo, hier ist Lena von EverlastAI. Schön, dass du dir die Zeit nimmst. Hast du gerade zehn Minuten für unser Erstgespräch?",
+  "firstMessageMode": "assistant-speaks-first",
+  "voicemailMessage": "Hi, hier ist Lena von EverlastAI. Schade, dass wir uns verpasst haben. Ich versuche es später nochmal, oder du rufst uns einfach zurück. Bis dann!",
+  "endCallMessage": "Danke dir, schönen Tag noch – tschüss!",
+  "endCallPhrases": ["tschüss", "auf wiederhören", "danke das wars", "wir hören uns"],
+  "silenceTimeoutSeconds": 20,
+  "maxDurationSeconds": 900,
+  "backgroundSound": "off",
+  "backgroundDenoisingEnabled": true,
+  "modelOutputInMessagesEnabled": true,
+
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2-general",
+    "language": "de",
+    "smartFormat": true,
+    "endpointing": 250,
+    "keywords": ["SDR:2", "BDR:2", "HubSpot:2", "Salesforce:2", "Outreach:2", "EverlastAI:3"]
+  },
+
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.3,
+    "maxTokens": 150,
+    "emotionRecognitionEnabled": true,
+    "messages": [
+      {
+        "role": "system",
+        "content": "Siehe vapi/system-prompt.md – hier vollständig einsetzen. Kernregeln: Du bist Lena, KI-Recruiting-Assistentin bei EverlastAI. Du führst ein 10-minütiges, freundliches Erstgespräch für die SDR-Rolle. Maximal 2 kurze Sätze pro Turn, eine Frage zur Zeit, niemals Listen vorlesen. Phasen: 1) Begrüßung + Recording-Einwilligung 2) Hintergrund & Motivation 3) Sales-Erfahrung 4) Cold-Call-Komfort (Rollenspiel) 5) Tools & Methodik 6) Verfügbarkeit & Gehalt 7) Rückfragen & Abschluss. Nie zusagen/absagen, nie Gehalt verhandeln, bei Off-Topic höflich zurückführen. Abschluss IMMER: 'Super, vielen Dank für das Gespräch! Du hörst spätestens in 48 Stunden von uns. Schönen Tag noch!'"
+      }
+    ]
+  },
+
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "21m00Tcm4TlvDq8ikWAM",
+    "model": "eleven_turbo_v2_5",
+    "stability": 0.45,
+    "similarityBoost": 0.75,
+    "style": 0.0,
+    "useSpeakerBoost": true,
+    "optimizeStreamingLatency": 3,
+    "fillerInjectionEnabled": true,
+    "enableSsmlParsing": false
+  },
+
+  "startSpeakingPlan": {
+    "waitSeconds": 0.4,
+    "smartEndpointingEnabled": true,
+    "transcriptionEndpointingPlan": {
+      "onPunctuationSeconds": 0.1,
+      "onNoPunctuationSeconds": 1.5,
+      "onNumberSeconds": 0.5
+    }
+  },
+
+  "stopSpeakingPlan": {
+    "numWords": 2,
+    "voiceSeconds": 0.2,
+    "backoffSeconds": 1.0
+  },
+
+  "server": {
+    "url": "https://your-eu-webhook.example.com/vapi/events",
+    "secret": "SET_VIA_ENV_VAPI_SECRET",
+    "timeoutSeconds": 20
+  },
+
+  "serverMessages": [
+    "end-of-call-report",
+    "status-update",
+    "hang",
+    "speech-update"
+  ],
+
+  "clientMessages": [
+    "transcript",
+    "function-call",
+    "hang"
+  ],
+
+  "analysisPlan": {
+    "summaryPrompt": "Erstelle eine 3-Satz-Zusammenfassung des Interviews auf Deutsch.",
+    "structuredDataPrompt": "Extrahiere: candidate_name, sales_experience_years, tool_stack[], salary_expectation_eur, availability_weeks, language_de_level (A1-C2).",
+    "structuredDataSchema": {
+      "type": "object",
+      "properties": {
+        "candidate_name": {"type": "string"},
+        "sales_experience_years": {"type": "number"},
+        "tool_stack": {"type": "array", "items": {"type": "string"}},
+        "salary_expectation_eur": {"type": ["number", "null"]},
+        "availability_weeks": {"type": "number"},
+        "language_de_level": {"type": "string"}
+      },
+      "required": ["candidate_name"]
+    },
+    "successEvaluationPrompt": "Bewerte: Konnte ein vollständiges Interview geführt werden? (true/false)",
+    "successEvaluationRubric": "PassFail"
+  }
+}
